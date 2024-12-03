@@ -1,7 +1,17 @@
+import { JobItem } from "../lib/Types";
 import JobListItem from "./JobListItem";
+import Spinner from "./Spinner";
 
-export function JobList({jobItems}) {
-  return <ul className="job-list">{jobItems.map(jobItem => <JobListItem jobItem={jobItem}/> )}</ul>;
+type JobListProps = {
+  jobItems: JobItem[];
+  isLoading: boolean;
 }
+
+export function JobList({jobItems,isLoading}: JobListProps) {
+  return <ul className="job-list">
+      {isLoading && <Spinner />}
+      {!isLoading &&jobItems.map(jobItem => <JobListItem key ={jobItem.id} jobItem={jobItem}/> )}</ul>;
+}
+
 
 export default JobList;
