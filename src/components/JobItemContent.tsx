@@ -1,11 +1,18 @@
-import {JobItemExpanded } from "../lib/Types";
 import BookmarkIcon from "./BookmarkIcon";
+import { useActiveId, useJobItem } from "./hooks";
+import Spinner from "./Spinner";
 
-type jobItemContentProps = {
-  jobItem: JobItemExpanded | null;
-}
 
-export default function JobItemContent({jobItem}): jobItemContentProps {
+export default function JobItemContent() {
+  const activeId = useActiveId()
+  const {jobItem, isLoading} = useJobItem(activeId);
+
+  if(isLoading){
+    return   <LoadingJobContent/>
+
+  }
+
+
   if(!jobItem) {
     return <EmptyJobContent />;
   }
@@ -105,10 +112,18 @@ export default function JobItemContent({jobItem}): jobItemContentProps {
   );
 }
 
+function LoadingJobContent (){
+  return <section className="job-details">
+  <div>
+    <Spinner />
+  </div> 
+</section>
+}
+
 function EmptyJobContent() {
   return (
     <section className="job-details">
-      <div>
+      <div> 
         <div className="job-details__start-view">
           <p>What are you looking for?</p>
           <p>
