@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BASE_API_URL } from "../lib/Constants";
 import { useQuery } from "@tanstack/react-query";
 import { JobItem, JobItemExpanded } from "../lib/Types";
+import { handleError } from "../lib/utils";
 
   type JobItemApiResponse = {
     public: boolean;
@@ -30,11 +31,7 @@ import { JobItem, JobItemExpanded } from "../lib/Types";
       refetchOnWindowFocus: false,
       retry: false,
       enabled: Boolean(id),
-      onError: (error) => {
-        console.log(error);
-        
-        
-      },
+      onError: handleError
     }
   );
 
@@ -54,6 +51,11 @@ import { JobItem, JobItemExpanded } from "../lib/Types";
 
   const fetchJobItems = async (searchText: string) : Promise<JobItemsApiResponse> => {
     const response = await fetch(`${BASE_API_URL}?search=${searchText}`);
+
+    if(!response.ok){
+      const errorData = await response.json();
+      throw new Error(errorData.description);
+    }
     const data = await response.json(); 
     return data;
   }
@@ -70,10 +72,8 @@ import { JobItem, JobItemExpanded } from "../lib/Types";
         refetchOnWindowFocus: false,
         retry: false,
         enabled: Boolean(searchText),
-        onError: (error) => {
-          console.log(error); 
-        },
-  });
+        onError: handleError,
+      }  );
 
   return {
     jobItems: data?.jobItems,
