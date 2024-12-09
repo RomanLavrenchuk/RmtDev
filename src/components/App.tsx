@@ -15,7 +15,7 @@ import PaginationControls from "./PaginationControls";
 import { useDebounce, useJobItems } from "./hooks";
 import { Toaster } from "react-hot-toast";
 import { RESULTS_PER_PAGE } from "../lib/Constants";
-import { SortBy } from "../lib/Types";
+import { PageDirection, SortBy } from "../lib/Types";
 
 
 
@@ -28,17 +28,18 @@ function App() {
   const [sortBy, setSortBy] = useState<SortBy>('relevant');  
   
 
+
   //derived / computed state
   const totalNumberOfResults = jobItems?.length || 0;
   const totalNumberOfPages = totalNumberOfResults / RESULTS_PER_PAGE;
 
-  const jobItemsSorted = jobItems?.sort((a,b) => {
+  const jobItemsSorted = [...(jobItems || [])].sort((a,b) => {
     if(sortBy ==='relevant'){
       return b.relevanceScore - a.relevanceScore
     } else return a.daysAgo - b.daysAgo;
     
    
-  }) || [];
+  });
   const jobItemsSortedAndSliced = 
           jobItemsSorted.slice(currentPage * RESULTS_PER_PAGE - RESULTS_PER_PAGE,currentPage * RESULTS_PER_PAGE) || [];
 
@@ -46,7 +47,9 @@ function App() {
 
 
   //event handlers / actions
-  const handleChangePage = (direction: 'next' | 'previous') => {
+
+  const handleChangePage = (direction: PageDirection) => {
+
     if(direction ==='next'){
       setCurrentPage((prev) => prev + 1);
     } else if (direction ==='previous'){
@@ -81,7 +84,7 @@ function App() {
                             totalNumberOfPages={totalNumberOfPages}/>
       </Sidebar>
 
-      <JobItemContent/>
+      <JobItemContent />
     </Container>
     <Footer />
     <Toaster position='top-right' />
